@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messenger Chat</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="messenger-container">
+        <div class="messenger-header">
+            <h2>Live Chat</h2>
+        </div>
+        <div id="messages" class="messenger-messages"></div>
+        <div class="messenger-input">
+            <input type="text" id="message" placeholder="Type a message..." autocomplete="off" />
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const inputMessage = document.getElementById("message");
+        const sendBtn = document.getElementById("sendBtn");
+        const allMessages = document.getElementById("messages");
+
+        socket.on("message", (data) => {
+            const bubble = document.createElement("div");
+            bubble.classList.add("message");
+            bubble.classList.add(data.type === "sent" ? "sent" : "received");
+            bubble.innerText = data.text;
+            allMessages.appendChild(bubble);
+            allMessages.scrollTop = allMessages.scrollHeight;
+        });
+
+        sendBtn.addEventListener("click", () => {
+            const message = inputMessage.value.trim();
+            if (message) {
+                socket.emit("user_message", message);
+                inputMessage.value = "";
+            }
+        });
+
+        inputMessage.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendBtn.click();
+        });
+    </script>
+
+</body>
+
+</html>
