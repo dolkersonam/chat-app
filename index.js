@@ -7,6 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+const PORT = process.env.PORT || 9000;
+
 io.on("connection" , (socket)=>{
     socket.on("user_message" , (message) => {
         socket.emit("message", { text: message, type: "sent" });
@@ -18,7 +20,9 @@ io.on("connection" , (socket)=>{
 app.use(express.static(path.resolve('./public')));
 
 app.get('/' , (req, res)=>{
-    return res.sendFile('./public/index.html');
+    return res.sendFile(path.resolve('./public/index.html'));
+
 })
-server.listen(9000, ()=> console.log("Server started at PORT : 9000"));
+server.listen(PORT, () => console.log(`Server started at PORT : ${PORT}`));
+
 
